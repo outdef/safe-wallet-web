@@ -3,6 +3,7 @@ import type { ProposalTypes, SessionTypes, SignClientTypes, Verify } from '@wall
 import type { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
 
 import WalletConnectWallet from '../WalletConnectWallet'
+import { SAFE_WALLET_METADATA } from '../constants'
 
 jest.mock('@walletconnect/core', () => ({
   Core: jest.fn(),
@@ -474,17 +475,24 @@ describe('WalletConnectWallet', () => {
 
   describe('getActiveSessions', () => {
     it('should return an array of active sessions', () => {
+      const session1 = {
+        topic: 'topic1',
+        namespaces: {},
+        self: { metadata: SAFE_WALLET_METADATA },
+      } as SessionTypes.Struct
+      const session2 = {
+        topic: 'topic2',
+        namespaces: {},
+        self: { metadata: { url: 'test.io' } },
+      } as SessionTypes.Struct
       jest.spyOn((wallet as any).web3Wallet, 'getActiveSessions').mockReturnValue({
-        topic1: { topic: 'topic1', namespaces: {} } as SessionTypes.Struct,
-        topic2: { topic: 'topic2', namespaces: {} } as SessionTypes.Struct,
+        topic1: session1,
+        topic2: session2,
       })
 
       const activeSessions = wallet.getActiveSessions()
 
-      expect(activeSessions).toEqual([
-        { topic: 'topic1', namespaces: {} },
-        { topic: 'topic2', namespaces: {} },
-      ])
+      expect(activeSessions).toEqual([session1])
     })
   })
 
