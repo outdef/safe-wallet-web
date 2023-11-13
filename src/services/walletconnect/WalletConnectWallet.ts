@@ -263,7 +263,13 @@ class WalletConnectWallet {
    */
   public getActiveSessions(): SessionTypes.Struct[] {
     const sessionsMap = this.web3Wallet?.getActiveSessions() || {}
-    return Object.values(sessionsMap)
+    return Object.values(sessionsMap).filter((session) => {
+      return (
+        session.self.metadata.url === SAFE_WALLET_METADATA.url &&
+        session.self.metadata.name === SAFE_WALLET_METADATA.name &&
+        session.self.metadata.description === SAFE_WALLET_METADATA.description
+      )
+    })
   }
 
   /**
